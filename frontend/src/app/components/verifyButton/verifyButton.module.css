@@ -1,0 +1,53 @@
+.verifyButton{
+    cursor: pointer;
+    width: fit-content;
+    min-width: 35px;
+    height: fit-content;
+    text-align: center;
+    padding: 5px 3px;
+    white-space: nowrap;
+    border-radius: 5px;
+    box-shadow: 2px 1px 1px 1px rgba(55, 81, 212, 0.409);
+}
+.verifyButton p{
+    font-size: 14px;
+    font-weight: 500;
+    margin: 0;
+    color: black !important;
+    z-index: 100;
+}
+.verifyButton:hover:not(.pending, .verified){
+    background-color: rgba(216, 247, 252, 0.267);
+    color: rgba(0, 0, 0, 0.687);
+}
+
+
+@keyframes blink {
+    0% {
+        background-color: rgba(230, 247, 252, 0.267);
+    }
+    50% {
+        background-color: rgba(200, 17, 17, 0.578);
+    }
+    100% {
+        background-color: rgba(230, 247, 252, 0.575);
+    }
+}
+.disabled, .pending{
+    cursor: not-allowed;
+}
+.pending{
+    cursor: none;
+    animation: blink 1s infinite;
+
+}
+.verified{
+    width: 20px;
+    height: 20px;
+    cursor: default;
+    border-radius: 50%;
+    background-color: green;
+    background-image: url('../../../../public/icons/tickIcon.svg');
+    background-repeat: no-repeat;
+    background-position: center;
+}
