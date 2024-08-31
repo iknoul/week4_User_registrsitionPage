@@ -2,7 +2,8 @@ const jwt = require('jsonwebtoken');
 
 exports.blacklistedTokens = new Set();
 
-exports.checkToken = (role, id)=>{
+exports.checkToken = (steps)=>{
+
     return (req, res, next)=>{
         try {
             const bToken = req.headers.authorization
@@ -13,12 +14,10 @@ exports.checkToken = (role, id)=>{
             const token = bToken.slice(7)
             const decoded = jwt.verify(token,process.env.SECRET_KEY)
             console.log(decoded)
+            // Add email from decoded token to req.body
+            req.body.email = decoded.email;
 
-            if(role.indexOf(decoded.role)==-1){
-                return res.status(403).json({message:'you are not authorized'})
-            }
-
-            if(id & id!=decoded.id){
+            if(steps.indexOf(decoded.step)==-1){
                 return res.status(403).json({message:'you are not authorized'})
             }
             next()

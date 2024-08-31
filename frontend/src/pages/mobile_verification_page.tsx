@@ -16,28 +16,47 @@ const MobileVerification = ()=>{
     const router = useRouter()
   
   const onSendOtp = async (mobile_number:string) => {
+
+    const token = sessionStorage.getItem('registrationToken')
     
     setOtpSent(true);  
     //OTP sending function here
-    if (mobile_number && !otpSent) {
-      try {
+    if (mobile_number && !otpSent) 
+    {
+      try 
+      {
         // API call for sending OTP
-        const result = await axios.post(`/auth/login-sentotpW`,{mobile_number})
-        setOtpSent(true);
-      } catch (error) {
+        const result = await axios.post(`/registration/verify-sentotp-mobile`,
+          {mobile_number},
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            }
+          })
+        setOtpSent(true);        
+      } 
+      catch (error) 
+      {
         console.error('Error sending OTP:', error);
         setFailed(true)
-        throw(error)
-  
+        throw(error)  
       }
     }
   };
   
   const verifyOtp = async (mobile_number:string, otp:string) => {
+   
+    const token = sessionStorage.getItem('registrationToken')
+
     try {
-          const result = await axios.post('/auth/login-verifyotpW', {
+          const result = await axios.post('/registration/verify-verifyotp-mobile', {
           mobile_number,
           OTP: otp,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        }
       });
   
       console.log(result.data.registrationToken)
@@ -65,7 +84,7 @@ const MobileVerification = ()=>{
     if (token) {
       const decodedToken = decodeToken(token);
       if (decodedToken && decodedToken.step === 'mobileVerified') {
-        router.push('/details_input_page'); // Redirect to the mobile verification page if already verified
+        router.push('/details_input_page'); // Redirect to the details_input_page if already verified
       }
     }
   }, [router]);

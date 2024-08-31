@@ -39,6 +39,11 @@
 .onlyMobile{
     display: none;
 }
+.isSubmit{
+    background-color: white;
+    color: rgba(166, 21, 21, 0.76);
+    border: 1px solid rgba(166, 21, 21, 0.76);
+}
 
 @media screen  and (max-width:1080px){
     .onlyMobile{

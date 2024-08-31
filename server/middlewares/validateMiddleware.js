@@ -1,5 +1,22 @@
 const { body, validationResult } = require('express-validator');
 
+
+
+exports.validateEmail = [
+    body('email')
+    .isString()
+    .notEmpty()
+    .isEmail(),
+    (req, res, next) => {
+        console.log('here ---- >>>>>>')
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
+        next();
+    },
+];
+
 exports.validateMobile_no = [
     body('mobile_number')
     .isString()

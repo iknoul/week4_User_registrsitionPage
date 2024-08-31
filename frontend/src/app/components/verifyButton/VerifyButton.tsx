@@ -1,7 +1,7 @@
 import styles from './verifyButton.module.css'
 
 interface myProps{
-    status?:'pending' | 'verified' | 'fail' |'sent OTP' | undefined,
+    status?:'pending' | 'verified' | 'Retry' |'sent OTP' | undefined,
     disabled:boolean,
     callBackFunction ?: Function,
     children?: String

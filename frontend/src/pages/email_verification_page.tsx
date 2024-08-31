@@ -1,6 +1,5 @@
 'use client'
 import React, { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
 import {useRouter} from 'next/router';
 import { decodeToken } from '@/utils/decodeToken';
 
@@ -10,40 +9,39 @@ import axios from '@/utils/axios'
 import OtpVerificationBox from '@/app/components/OtpVerificationBox/OtpVerificationBpx';
 
 
-function Email_verification_page() {
+const  Email_verification_page = ()=> {
 
-  const [step, setStep] = useState(1)
   const [disabled, disable] = useState(true)
   const [failed, setFailed] = useState(false)
   const [verified, setVerified] = useState(false)
   const [otpSent, setOtpSent] = useState(false);
   const router = useRouter()
 
-const onSendOtp = async (email:string) => {
-  
-  setOtpSent(true);  
-  //OTP sending function here
-  if (email && !otpSent) {
-    try {
-      // API call for sending OTP
-      const result = (await axios.post(`/auth/login-sentotp`,{email, Mobile_no:'2221012312'}))
-      setOtpSent(true);
-    } catch (error) {
-      console.error('Error sending OTP:', error);
-      setFailed(true)
-      throw(error)
+  const onSendOtp = async (email:string) => {
+    
+    setOtpSent(true);  
+    //OTP sending function here
+    if (email && !otpSent) {
+      try {
+        // API call for sending OTP
+        const result = await axios.post(`/registration/verify-sentotp-email`,{email})
+        setOtpSent(true);
+      } catch (error) {
+        console.error('Error sending OTP:', error);
+        setFailed(true)
+        // throw(error)
 
+      }
     }
-  }
-};
+  };
 
 const verifyOtp = async (email:string, otp:string) => {
+
   try {
-        const result = await axios.post('/auth/login-verifyotp', {
+        const result = await axios.post('/registration/verify-verifyotp-email', {
         email,
-        Mobile_no: '2221012312',
         OTP: otp,
-    });
+      });
 
     console.log(result.data.registrationToken)
     sessionStorage.setItem('registrationToken', result.data.registrationToken)

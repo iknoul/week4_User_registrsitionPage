@@ -1,6 +1,5 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
-import { UseFormReturn, FieldValues } from 'react-hook-form';
 import { AxiosError } from 'axios';
 import { useRouter } from 'next/router';
 import ArrowRight from '@/app/components/ArrowRight/ArrowRight';
@@ -31,11 +30,11 @@ type FormValues = {
     otp: string,
   }
 
-const OtpVerificationBox: React.FC<OtpVerificationBoxProps> = ({ verifyOtp, onSendotp, type, otpSent, verified, failed, disabled, setOtpSent, setVerified, setFailed, disable, after}) => {
+const OtpVerificationBox: React.FC<OtpVerificationBoxProps> = ({ verifyOtp, onSendotp, type, otpSent, verified, failed, after}) => {
 
 
     const form = useForm<FormValues>({mode: 'onChange'})  
-    const { register, handleSubmit, formState, getValues, setValue, clearErrors, setError } = form;
+    const { register, formState, getValues, clearErrors, setError } = form;
 
     const router = useRouter();
 
@@ -60,9 +59,8 @@ const OtpVerificationBox: React.FC<OtpVerificationBoxProps> = ({ verifyOtp, onSe
             // Check if the error is an AxiosError
             if (error instanceof AxiosError) {
                 // Handle AxiosError specifically
-                if (error.response && (error.response.status === 401 || error.response.status === 500)) {
+                if (error.response && (error.response.status === 401 || error.response.status === 500 || error.response.status === 500)) {
                 // Set the error for the OTP field
-                console.log('hherer but not')
                 setError('email', {
                     type: 'manual',
                     message: ' ! Invalid OTP. Please try again.',
@@ -126,7 +124,7 @@ const OtpVerificationBox: React.FC<OtpVerificationBoxProps> = ({ verifyOtp, onSe
                     <VerifyButton
                         callBackFunction={onSendOtpClick}
                         disabled={!isValid || otpSent}
-                        status={otpSent?(verified?'verified':(failed?'fail':'pending')):'sent OTP'}                   
+                        status={verified?'verified':(failed?'Retry':otpSent?'pending':'sent OTP')}                   
                     />
                 </div>
 

@@ -16,7 +16,7 @@
     color: black !important;
     z-index: 100;
 }
-.verifyButton:hover:not(.pending, .verified){
+.verifyButton:hover:not(.pending, .verified, .Retry){
     background-color: rgba(216, 247, 252, 0.267);
     color: rgba(0, 0, 0, 0.687);
 }
@@ -37,15 +37,23 @@
     cursor: not-allowed;
 }
 .pending{
-    cursor: none;
+    cursor:none;
     animation: blink 1s infinite;
-
+}
+.Retry{
+    background-color: rgba(112, 3, 3, 0.68);
+    
+}
+.Retry p{
+    color: rgb(243, 238, 238) !important;
 }
 .verified{
-    width: 20px;
-    height: 20px;
+    width: 15px;
+    min-width: 15px;
+    height: 15px;
     cursor: default;
     border-radius: 50%;
+    box-shadow: none;
     background-color: green;
     background-image: url('../../../../public/icons/tickIcon.svg');
     background-repeat: no-repeat;

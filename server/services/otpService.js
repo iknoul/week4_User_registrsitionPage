@@ -9,7 +9,7 @@ exports.generateOTP = (email) => {
 };
 
 exports.verifyOTP = (email, otp) => {
-    console.log(typeof otps[email].otp,"otps",)
+    // console.log(typeof otps[email].otp,"otps",)
     console.log(otp)
     if (!otps[email]) {
         return false;

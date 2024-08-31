@@ -11,12 +11,13 @@ interface ButtonProps {
     height?:string;
     children?: string;
     onlyMobile?:boolean;
+    isSubmit?:boolean;
   }
 
 // conditionally adding classes and  style it dynamically
-const ButtonOne = ({onlyMobile, bgColor, borderColor, color, width, height, callBackFunction, children}: ButtonProps)=>{
+const ButtonOne = ({isSubmit, onlyMobile, bgColor, borderColor, color, width, height, callBackFunction, children}: ButtonProps)=>{
 
-    const className = `${styles.button} ${onlyMobile ? styles.onlyMobile: ''} ${bgColor ? styles[`bg${bgColor}`] : ''} ${color ? styles[color] : ''} ${borderColor ? styles[borderColor] : ''}`;
+    const className = `${isSubmit ? styles.isSubmit:''}${styles.button} ${onlyMobile ? styles.onlyMobile: ''} ${bgColor ? styles[`bg${bgColor}`] : ''} ${color ? styles[color] : ''} ${borderColor ? styles[borderColor] : ''}`;
     return(
     <div  onClick={callBackFunction ? ()=>{callBackFunction()} : () => {}} className = {className} style={{width:width,height:height }}>
         <p>{children}</p>

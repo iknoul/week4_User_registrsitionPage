@@ -18,23 +18,26 @@ const userSchema = new Schema({
       required: true,
       unique: true // Ensure email is unique
     },
-    mobile_no: {
+    mobile_number: {
       type:String,
     },
-    adhar: {
+    aadhar: {
       type:String,
     },
-    panCard: {
+    pancard: {
       type:String,
     },
-    bankAccount: {
+    bankAccountNo: {
       type:String,
-    },   
-    gstNmber: {
+    },
+    bankIfscCode: {
+      type:String,
+    },
+    gstNumber: {
       type:String,
     }, 
-    address: {
-      type: address
+    pincode: {
+      type: String,
     }    
 
 })
