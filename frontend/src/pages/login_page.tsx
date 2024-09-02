@@ -11,7 +11,7 @@ export default function LoginPage() {
         <input className={styles.input} type="password" placeholder="Password" />
         <ButtonOne width='100%'>Login</ButtonOne>
         <p>Not yet registerd!{' '}
-        <Link href="/register_page">
+        <Link href="/email_verification_page">
           Register
         </Link>{' '}
         to get started!

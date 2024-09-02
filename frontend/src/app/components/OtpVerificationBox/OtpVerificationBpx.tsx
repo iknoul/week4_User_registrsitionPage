@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { AxiosError } from 'axios';
 import { useRouter } from 'next/router';
@@ -8,6 +8,8 @@ import styles from './OtpVerificationBox.module.css';
 
 
 interface OtpVerificationBoxProps {
+    setErrorA : Function | undefined;
+    errorA : string | undefined;
     verifyOtp : Function;
     onSendotp : Function;
     type? : 'email' | 'mobile';
@@ -30,7 +32,7 @@ type FormValues = {
     otp: string,
   }
 
-const OtpVerificationBox: React.FC<OtpVerificationBoxProps> = ({ verifyOtp, onSendotp, type, otpSent, verified, failed, after}) => {
+const OtpVerificationBox: React.FC<OtpVerificationBoxProps> = ({ setErrorA, errorA, verifyOtp, onSendotp, type, otpSent, verified, failed, after}) => {
 
 
     const form = useForm<FormValues>({mode: 'onChange'})  
@@ -52,12 +54,16 @@ const OtpVerificationBox: React.FC<OtpVerificationBoxProps> = ({ verifyOtp, onSe
         const otp = getValues('otp');
         clearErrors('email');
 
-        try {
-           await verifyOtp(inputValue, otp)    
-        } catch (error) {
+        try 
+        {
+           await verifyOtp(inputValue, otp)   
+        } 
+        catch (error) 
+        {
             console.log('herere')
             // Check if the error is an AxiosError
-            if (error instanceof AxiosError) {
+            if (error instanceof AxiosError) 
+            {
                 // Handle AxiosError specifically
                 if (error.response && (error.response.status === 401 || error.response.status === 500 || error.response.status === 500)) {
                 // Set the error for the OTP field
@@ -69,13 +75,27 @@ const OtpVerificationBox: React.FC<OtpVerificationBoxProps> = ({ verifyOtp, onSe
                 // Handle other AxiosErrors, such as network issues or other statuses
                 console.error('Verification failed with status:', error.response?.status);
                 }
-            } else {
+            } 
+            else 
+            {
                 // Handle non-AxiosErrors (e.g., unexpected errors)
                 
                 console.error('An unexpected error occurred:', error);
             }
         }
     }
+    useEffect(()=>{
+        if(errorA)
+        {
+            setError('email', {
+                type: 'manual',
+                message: errorA,
+            });
+            setTimeout(()=>router.push('/login_page'), 2500)
+            setErrorA && setErrorA(undefined)
+
+        } 
+    },[errorA])
 
     return (
         <div className={styles.container}>

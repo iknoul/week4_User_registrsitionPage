@@ -16,6 +16,7 @@ const  Email_verification_page = ()=> {
   const [verified, setVerified] = useState(false)
   const [otpSent, setOtpSent] = useState(false);
   const router = useRouter()
+  const [error, setError] = useState<string | undefined>(undefined);
 
   const onSendOtp = async (email:string) => {
     
@@ -37,35 +38,40 @@ const  Email_verification_page = ()=> {
 
 const verifyOtp = async (email:string, otp:string) => {
 
-  try {
-        const result = await axios.post('/registration/verify-verifyotp-email', {
-        email,
-        OTP: otp,
-      });
+  try 
+  {
+    const result = await axios.post('/registration/verify-verifyotp-email', {
+      email,
+      OTP: otp,
+    });
 
-    console.log(result.data.registrationToken)
-    sessionStorage.setItem('registrationToken', result.data.registrationToken)
+    if(result.status ===200){
 
-    // Clear any previous OTP errors if the response is successful
-    
-    setVerified(true)
-    disable(true)
-
-    // Handle successful OTP verification
-
-    } catch (error) {
+      // console.log(result.data.registrationToken)
+      sessionStorage.setItem('registrationToken', result.data.registrationToken)
+      // Handle successful OTP verification       
+      setVerified(true)
+      disable(true)
+    }
+    else
+    {
+      setError('* Email already registered (redirect to login page in 2s)')
       setOtpSent(false)
       setFailed(true)
-      disable(false)
-      setFailed(true)
-      throw error
-      
     }
-    }
+  } 
+  catch (error) 
+  {      
+      setOtpSent(false)
+      setFailed(true)   
+  }
+}
 
-useEffect(() => {
+useEffect(() => 
+{
   const token = sessionStorage.getItem('registrationToken');
-  if (token) {
+  if (token) 
+  {
     const decodedToken = decodeToken(token);
     if (decodedToken &&  (decodedToken.step === 'emailVerified' || decodedToken.step === 'mobileVerified')) {
       router.push('/mobile_verification_page'); // Redirect to the mobile verification page if already verified
@@ -74,6 +80,8 @@ useEffect(() => {
 }, [router]);
   return (
     <OtpVerificationBox 
+      setErrorA = {setError}
+      errorA= {error}
       verifyOtp={verifyOtp}
       onSendotp={onSendOtp}
       type='email' 

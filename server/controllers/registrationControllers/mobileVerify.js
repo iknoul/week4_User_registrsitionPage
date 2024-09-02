@@ -15,7 +15,7 @@ exports.sendOTPMobile = async (req, res, next) => {
         const otp = otpService.generateOTP(mobile_number);
         console.log(otp, "thid is otp",mobile_number)
         // await whatsapp.sendMsg(mobile_number, `Your OTP Code: \nYour OTP code is ${otp}`);
-        // await twilio.sendSms(mobile_number, otp)
+        await twilio.sendSms(mobile_number, otp)
         return res.status(200).send('OTP sent successfully');
     } catch (error) {
         return res.status(501).send('failed');

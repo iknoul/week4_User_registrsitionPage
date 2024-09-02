@@ -13,7 +13,7 @@ function getVerifivationId(bankAccountNo, bankIfscCode) {
             port: null,
             path: '/v3/tasks/async/verify_with_source/validate_bank_account',
             headers: {
-                'x-rapidapi-key': 'a2adb6a937msh4a51c4ca69acecbp1d5738jsnc1a7fded247e',
+                'x-rapidapi-key': 'a5f81d51ecmsh33c9bb11d5bbcc5p1018cfjsn66e44cedf33e',
                 'x-rapidapi-host': 'indian-bank-account-verification.p.rapidapi.com',
                 'Content-Type': 'application/json',
             },
@@ -50,8 +50,9 @@ function getVerifivationId(bankAccountNo, bankIfscCode) {
     });
 }
 
-function getBankVerificationData(requestId) {
-    console.log(requestId)
+const getBankVerificationData = async (requestId, retryCount = 5, delay = 10000) => {
+    console.log(`Fetching data for request ID: ${requestId}`);
+
     return new Promise((resolve, reject) => {
         const options = {
             method: 'GET',
@@ -59,21 +60,33 @@ function getBankVerificationData(requestId) {
             port: null,
             path: `/v3/tasks?request_id=${requestId}`,
             headers: {
-                'x-rapidapi-key': 'a2adb6a937msh4a51c4ca69acecbp1d5738jsnc1a7fded247e',
-                'x-rapidapi-host': 'indian-bank-account-verification.p.rapidapi.com',
+                'x-rapidapi-key': 'a5f81d51ecmsh33c9bb11d5bbcc5p1018cfjsn66e44cedf33e',
+                'x-rapidapi-host': 'indian-bank-account-verification.p.rapidapi.com'
             },
         };
 
         const req = https.request(options, (res) => {
+
             const chunks = [];
 
             res.on('data', (chunk) => {
                 chunks.push(chunk);
             });
 
-            res.on('end', () => {
+            res.on('end', async () => {
                 const body = Buffer.concat(chunks);
-                resolve(body.toString());
+                const result = JSON.parse(body.toString());
+
+                // Assuming 'status' in result contains 'in_progress'
+                if (result.status === 'in_progress' && retryCount > 0) {
+                    console.log('Verification still in progress. Retrying...');
+                    // Wait for the delay time and then retry
+                    setTimeout(() => {
+                        resolve(getBankVerificationData(requestId, retryCount - 1, delay));
+                    }, delay);
+                } else {
+                    resolve(result);
+                }
             });
 
             res.on('error', (err) => {
@@ -93,7 +106,7 @@ exports.verifyBankDetails = async (req, res) => {
         const verificationResult = await getVerifivationId(accNo, ifsc);
         
         // Assuming you get `request_id` from verificationResult
-        const { request_id } = JSON.parse(verificationResult);
+        const { request_id } = await JSON.parse(verificationResult);
         
         if (!request_id) {
             return res.status(400).json({ success: false, message: 'Request ID not found in verification result' });
@@ -102,7 +115,7 @@ exports.verifyBankDetails = async (req, res) => {
         // Now, use the request_id to get the real data
         const realData = await getBankVerificationData(request_id);
         // Parse the realData to JSON
-        const parsedDataArray = JSON.parse(realData);
+        const parsedDataArray = await JSON.parse(realData);
         console.log("Parsed realData:", parsedDataArray);
 
         // Access the first element of the array
@@ -111,12 +124,13 @@ exports.verifyBankDetails = async (req, res) => {
         // Check if the status is completed
         if (parsedData.status === 'completed' && parsedData.result.status === 'id_found') {
 
+
             const updatedUser = await User.findOneAndUpdate(
                 { email: email }, // Find the user by email
                 {
                   $set: {
-                    ...(bankAccountNo && { bankAccountNo }),
-                    ...(bankIfscCode && { bankIfscCode }),
+                    ...(bankAccountNo && { bankAccountNo:accNo }),
+                    ...(bankIfscCode && { bankIfscCode:ifsc }),
                   },
                 },
               );

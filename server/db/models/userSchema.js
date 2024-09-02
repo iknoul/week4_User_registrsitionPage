@@ -38,7 +38,10 @@ const userSchema = new Schema({
     }, 
     pincode: {
       type: String,
-    }    
+    },
+    dob: {
+      type:Date
+    }
 
 })
 

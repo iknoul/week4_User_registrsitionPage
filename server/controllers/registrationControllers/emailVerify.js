@@ -8,12 +8,11 @@ const User = require('../../db/models/userSchema')
 const jwt = require('jsonwebtoken')
 
 exports.sendOTP = async (req, res, next) => {
-    console.log('pppp')
     try {
         const { email } = req.body;
         const otp = otpService.generateOTP(email);
         console.log(otp, "thid is otp",email)
-        // await mailer.sendEmail(email, 'Your OTP Code', `Your OTP code is ${otp}`);
+        await mailer.sendEmail(email, 'Your OTP Code', `Your OTP code is ${otp}`);
         return res.status(200).send('OTP sent successfully');
     } catch (error) {
         return res.status(501).send('failed');
@@ -28,10 +27,14 @@ exports.verifyOTP = async(req, res, next) => {
         const registrationToken = jwt.sign({id:23,step:"emailVerified", email:email},process.env.SECRET_KEY,{expiresIn:'1d'})
         
         // Create a new user with just the email
-        const newUser = new User({ email });
+        try {
+            const newUser = new User({ email });
+            // Save the user to the database
+            const savedUser = await newUser.save();
 
-        // Save the user to the database
-        const savedUser = await newUser.save();
+        } catch (error) {
+            return res.status(202).send('Email already registered')
+        }
 
         return res
             .status(200)

@@ -48,6 +48,10 @@ const Details_input_page: React.FC = () => {
     pinCode: undefined,
   });
 
+  const initialDate = '2023-01-01'; // Example initial date in string format
+  const [date, setDate] = useState<string>(initialDate);
+  const [dateError, setDateError] = useState<string | undefined>(undefined);
+
   const updateStatus = (category: StatusCategory, status: Status) => {
     setStatuses(prevStatuses => ({
       ...prevStatuses,
@@ -57,6 +61,17 @@ const Details_input_page: React.FC = () => {
 
    // Function to check if any status is pending
   const onSubmit = async() => {
+ 
+    if(new Date(initialDate).getTime() == new Date(date).getTime()){
+      setDateError('* Date is required')
+    }
+
+       // Check each field and set errors if empty
+    Object.entries(fieldValues).forEach(([field, value]) => {
+        if (!value) {
+          setError(field as any, { type: 'manual', message: `* ${field} is required` });
+        }
+    });
 
     statuses['ifsc'] = 'verified'
     const isAllVerified = Object.values(statuses).every(status => status === 'verified');
@@ -85,8 +100,6 @@ const Details_input_page: React.FC = () => {
 
       }
     }
-  
-    // Handle form submission if needed
   };
 
   const onRetry = (field:string)=>{
@@ -174,6 +187,10 @@ const Details_input_page: React.FC = () => {
    
   }, [statuses]);
 
+  useEffect(()=>{
+    
+  })
+
   return (
     <PrivateRouter requiredSteps={{ step: 'mobileVerified' }}>
       <div className={styles.container}>
@@ -183,7 +200,7 @@ const Details_input_page: React.FC = () => {
         {inputCategory.map((item, index) => 
         {
           return (
-            <>
+            <React.Fragment key={index}>
             <div
               className={`${styles.inputs} ${statuses[item as StatusCategory] === 'verified'?styles.verified : ''}`}     
               key={index}>
@@ -289,7 +306,7 @@ const Details_input_page: React.FC = () => {
             {errors[item] && <p className={styles.err}>{errors[item]?.message}</p>}
             {item === 'accNo' && !errors['accNo'] && errors['ifsc'] && <p className={styles.err}>{errors['ifsc']?.message}</p>}
             
-            </>
+            </React.Fragment>
           );
         })}
 
@@ -298,9 +315,23 @@ const Details_input_page: React.FC = () => {
             <AdressContainer {...adressData}/>
           )
         }
+        
+         <div className={`${styles.inputs}`}>              
+              <label htmlFor="date">DOB:</label>
+              <input
+                  type='date' 
+                  className={styles.ifsc}
+                  value={date}
+                  onChange={(e) => {
+                    setDate(e.target.value)
+                    setDateError(undefined); // Clear error when the date changes
+                  }}
+              />
+          </div>
+         {dateError && <p className={styles.err}>{dateError}</p>}
 
         {/* Submit Button */}
-        <ButtonOne  isSubmit={submiited} width='100px' height='30px'>{submiited ? '':'Submit'}</ButtonOne>
+        <ButtonOne  callBackFunction={onSubmit} isSubmit={submiited} width='100px' height='30px'>{submiited ? '':'Submit'}</ButtonOne>
       </form>
     </div>
 
